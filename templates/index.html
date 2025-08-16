@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto text-center">
+        <div class="jumbotron bg-light p-5 rounded">
+            <h1 class="display-4"><i class="fas fa-car"></i> Vehicle Parking App</h1>
+            <p class="lead">Manage your parking needs efficiently with our comprehensive parking management system.</p>
+            <hr class="my-4">
+            <p>Book parking spots, manage parking lots, and track your parking history all in one place.</p>
+            
+            {% if not session.user_id %}
+                <div class="mt-4">
+                    <a class="btn btn-primary btn-lg me-3" href="{{ url_for('login') }}" role="button">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    <a class="btn btn-outline-primary btn-lg" href="{{ url_for('register') }}" role="button">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                </div>
+            {% else %}
+                <div class="mt-4">
+                    {% if session.is_admin %}
+                        <a class="btn btn-primary btn-lg" href="{{ url_for('admin_dashboard') }}" role="button">
+                            <i class="fas fa-tachometer-alt"></i> Admin Dashboard
+                        </a>
+                    {% else %}
+                        <a class="btn btn-primary btn-lg" href="{{ url_for('user_dashboard') }}" role="button">
+                            <i class="fas fa-tachometer-alt"></i> User Dashboard
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-map-marker-alt fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Multiple Locations</h5>
+                <p class="card-text">Find parking spots across various prime locations in the city.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-clock fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Real-time Availability</h5>
+                <p class="card-text">Check real-time availability of parking spots and book instantly.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-rupee-sign fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">Transparent Pricing</h5>
+                <p class="card-text">Clear pricing structure with no hidden charges.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

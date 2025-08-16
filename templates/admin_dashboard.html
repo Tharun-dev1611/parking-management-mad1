@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Vehicle Parking App{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+    <div>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-primary me-2">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </a>
+        <a href="{{ url_for('create_lot') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Create New Parking Lot
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-building fa-2x mb-2"></i>
+                <h4>{{ stats.total_lots }}</h4>
+                <p class="mb-0">Total Lots</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-square fa-2x mb-2"></i>
+                <h4>{{ stats.total_spots }}</h4>
+                <p class="mb-0">Total Spots</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-check-square fa-2x mb-2"></i>
+                <h4>{{ stats.available_spots }}</h4>
+                <p class="mb-0">Available</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-danger text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-times-square fa-2x mb-2"></i>
+                <h4>{{ stats.occupied_spots }}</h4>
+                <p class="mb-0">Occupied</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x mb-2"></i>
+                <h4>{{ stats.total_users }}</h4>
+                <p class="mb-0">Total Users</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-secondary text-white">
+            <div class="card-body text-center">
+                <a href="{{ url_for('view_users') }}" class="text-white text-decoration-none">
+                    <i class="fas fa-eye fa-2x mb-2"></i>
+                    <h6>View Users</h6>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Parking Lots Table -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-list"></i> Parking Lots</h5>
+    </div>
+    <div class="card-body">
+        {% if parking_lots %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Location Name</th>
+                            <th>Address</th>
+                            <th>Pin Code</th>
+                            <th>Price/Hour</th>
+                            <th>Total Spots</th>
+                            <th>Available</th>
+                            <th>Occupied</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lot in parking_lots %}
+                        <tr>
+                            <td>{{ lot.id }}</td>
+                            <td>{{ lot.prime_location_name }}</td>
+                            <td>{{ lot.address }}</td>
+                            <td>{{ lot.pin_code }}</td>
+                            <td>₹{{ lot.price_per_hour }}</td>
+                            <td>{{ lot.maximum_number_of_spots }}</td>
+                            <td class="status-available">{{ lot.parking_spots|selectattr("status", "equalto", "A")|list|length }}</td>
+                            <td class="status-occupied">{{ lot.parking_spots|selectattr("status", "equalto", "O")|list|length }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ url_for('view_spots', lot_id=lot.id) }}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{{ url_for('edit_lot', lot_id=lot.id) }}" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="{{ url_for('delete_lot', lot_id=lot.id) }}" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-building fa-3x text-muted mb-3"></i>
+                <h5>No parking lots found</h5>
+                <p class="text-muted">Create your first parking lot to get started.</p>
+                <a href="{{ url_for('create_lot') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create Parking Lot
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Statistics Summary -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Parking Spots Overview</h5>
+            </div>
+            <div class="card-body">
+                {% if stats.total_spots > 0 %}
+                    <div class="row">
+                        <div class="col-6 text-center">
+                            <h3 class="status-available">{{ stats.available_spots }}</h3>
+                            <p>Available Spots</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" style="width: {{ (stats.available_spots / stats.total_spots * 100)|round }}%"></div>
+                            </div>
+                            <small>{{ (stats.available_spots / stats.total_spots * 100)|round }}% Available</small>
+                        </div>
+                        <div class="col-6 text-center">
+                            <h3 class="status-occupied">{{ stats.occupied_spots }}</h3>
+                            <p>Occupied Spots</p>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-danger" style="width: {{ (stats.occupied_spots / stats.total_spots * 100)|round }}%"></div>
+                            </div>
+                            <small>{{ (stats.occupied_spots / stats.total_spots * 100)|round }}% Occupied</small>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <p class="text-muted">No parking spots data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('create_lot') }}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Create New Parking Lot
+                    </a>
+                    <a href="{{ url_for('view_users') }}" class="btn btn-info">
+                        <i class="fas fa-users"></i> View All Users
+                    </a>
+                    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-sync-alt"></i> Refresh Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

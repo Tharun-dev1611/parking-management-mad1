@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Booking - Vehicle Parking App{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-check"></i> Confirm Parking Booking</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h5>Parking Lot Details</h5>
+                        <p><strong>Location:</strong> {{ lot.prime_location_name }}</p>
+                        <p><strong>Address:</strong> {{ lot.address }}</p>
+                        <p><strong>Pin Code:</strong> {{ lot.pin_code }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Pricing Information</h5>
+                        <p><strong>Price per Hour:</strong> ₹{{ lot.price_per_hour }}</p>
+                        <p><strong>Available Spots:</strong> {{ lot.parking_spots|selectattr("status", "equalto", "A")|list|length }}</p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="vehicle_number" class="form-label">Vehicle Number *</label>
+                        <input type="text" class="form-control" id="vehicle_number" name="vehicle_number" 
+                               placeholder="e.g., MH01AB1234" required>
+                        <div class="form-text">Enter your vehicle registration number</div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Note:</strong> A parking spot will be automatically assigned to you upon confirmation.
+                        You will be charged ₹{{ lot.price_per_hour }} per hour.
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('book_parking') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check"></i> Confirm Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
